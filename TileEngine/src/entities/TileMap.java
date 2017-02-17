@@ -3,6 +3,7 @@ package entities;
 import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.security.KeyStore.PrivateKeyEntry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.lwjgl.opengl.GL43;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import renderEngine.Renderable;
@@ -113,8 +115,8 @@ public class TileMap implements Renderable{
 	 * @param level The level's id, in ints
 	 */
 	private void bindUniform(int level){
-		System.out.println("columns: " + levels.get(level).getActiveTileset().getNumberOfColumns());
-		System.out.println("rows: " + levels.get(level).getActiveTileset().getNumberOfRows());
+		//System.out.println("columns: " + levels.get(level).getActiveTileset().getNumberOfColumns());
+		//System.out.println("rows: " + levels.get(level).getActiveTileset().getNumberOfRows());
 		shader.loadTilesetNumberOfColumns(17);
 		shader.loadTilesetNumberOfRows(17);
 	}
@@ -208,15 +210,24 @@ public class TileMap implements Renderable{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document document = builder.parse(new File(tileMapDefinitionPath));
-
+		
 		//Crea i tilesets
+		loadTileset(document.getElementsByTagName("tileset"));
+
+		//Crea i tileLevels
+		loadTileLevels(document.getElementsByTagName("layer"));
+		
+		
+	}
+
+	private void loadTileset(NodeList nodes){
 		String tilesetDefinitionPath = null;
 		String tilesetImagePath = null;
 
-		NodeList nodeList = document.getElementsByTagName("tileset");
-		for (int i=0; i<nodeList.getLength(); i++) {
-			for(int j=0; j<nodeList.item(i).getAttributes().getLength(); j++){
-				Node attribute = nodeList.item(i).getAttributes().item(j);
+		//NodeList nodeList = document.getElementsByTagName("tileset");
+		for (int i=0; i<nodes.getLength(); i++) {
+			for(int j=0; j<nodes.item(i).getAttributes().getLength(); j++){
+				Node attribute = nodes.item(i).getAttributes().item(j);
 				switch (attribute.getNodeName()) {
 				case "definitionPath":
 					tilesetDefinitionPath = attribute.getTextContent();
@@ -226,39 +237,30 @@ public class TileMap implements Renderable{
 					break;
 				}
 			}
-			System.out.println("definitionPath: " + tilesetDefinitionPath);
-			System.out.println("imagePath: " + tilesetImagePath);
+			//System.out.println("definitionPath: " + tilesetDefinitionPath);
+			//System.out.println("imagePath: " + tilesetImagePath);
 			if(tilesetDefinitionPath != null && tilesetImagePath != null)
 				tilesets.add(new Tileset(tilesetDefinitionPath, tilesetImagePath));
 		}
+	}
 
-		//Crea i tileLevels
+	private void loadTileLevels(NodeList layers){
 		String tileLevelName = ""; 
 		String activeTileset = "";
 		List<Integer> data = new ArrayList<>();
 		Vector2f tileLevelDimension = new Vector2f();
-		nodeList = document.getElementsByTagName("layer");
-		for(int layerNumber=0; layerNumber<nodeList.getLength(); layerNumber++){
-			Node layer = nodeList.item(layerNumber);
+
+		for(int layerNumber=0; layerNumber<layers.getLength(); layerNumber++){
+			Node layer = layers.item(layerNumber);
 			if(layer.hasAttributes()){
-				for(int attribNumber=0; attribNumber<layer.getAttributes().getLength(); attribNumber++){
-					Node attribute = layer.getAttributes().item(attribNumber);
-					switch (attribute.getNodeName()) {
-					case "name":
-						tileLevelName = attribute.getTextContent();
-						break;
-					case "width":
-						tileLevelDimension.x = Integer.parseInt(attribute.getTextContent());
-						break;
-					case "height":
-						tileLevelDimension.y = Integer.parseInt(attribute.getTextContent());
-						break;
-					}
-				}
+				NamedNodeMap layerAttributes = layer.getAttributes();
+				tileLevelName = layerAttributes.getNamedItem("name").getTextContent();
+				tileLevelDimension.x = Integer.parseInt(layerAttributes.getNamedItem("width").getTextContent());
+				tileLevelDimension.y = Integer.parseInt(layerAttributes.getNamedItem("height").getTextContent());
 				System.out.println("TileLevel name: " + tileLevelName);
 				System.out.println("TileLevel dimension: " + tileLevelDimension.x + " " + tileLevelDimension.y);
 			}
-			
+
 			NodeList layerChild = layer.getChildNodes();
 			for(int layerChildNumber=0; layerChildNumber<layerChild.getLength(); layerChildNumber++){
 				switch (layerChild.item(layerChildNumber).getNodeName()) {
@@ -266,10 +268,10 @@ public class TileMap implements Renderable{
 					NodeList properties = layerChild.item(layerChildNumber).getChildNodes();
 					for(int propertiesNumber=0; propertiesNumber<properties.getLength(); propertiesNumber++){
 						if(properties.item(propertiesNumber).hasAttributes()){
-							if(properties.item(propertiesNumber).getAttributes().item(0).getNodeName() == "name"){
-								activeTileset = properties.item(propertiesNumber).getAttributes().item(1).getTextContent();
-								System.out.println("active tileSet: " + activeTileset);
-							}
+							NamedNodeMap propertyAttributes = properties.item(propertiesNumber).getAttributes();
+							if(propertyAttributes.getNamedItem("name").getTextContent().equalsIgnoreCase("tileset"))
+								activeTileset = propertyAttributes.getNamedItem("value").getTextContent();
+							System.out.println("active tileSet: " + activeTileset);
 						}
 					}	
 					break;
@@ -280,16 +282,16 @@ public class TileMap implements Renderable{
 					data = new ArrayList<>();
 					for(int i=0; i< tilesBuffer.length; i++)
 						data.add(Integer.parseInt(tilesBuffer[i]));
-					for(int i=0; i<data.size(); i++)
-						System.out.print(data.get(i));
-					System.out.println("");
+					//for(int i=0; i<data.size(); i++)
+					//	System.out.print(data.get(i));
+					//System.out.println("");
 					break;
 				}
 			}
-			
+
 		levels.add(new TileLevel(tileLevelName, tilesets, activeTileset, data, tileLevelDimension, new Vector2f(64, 64)));
-		}
 	}
+}
 
 
 }
