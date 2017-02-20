@@ -38,7 +38,7 @@ public class TileLevel {
 	public int[] getTilesID(){
 		int data[] = new int[tilesID.size()];
 		for(int i=0; i<tilesID.size(); i++)
-			data[i] = tilesID.get(i)+1;
+			data[i] = tilesID.get(i);
 		return data;
 	}
 	

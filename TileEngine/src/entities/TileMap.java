@@ -3,7 +3,6 @@ package entities;
 import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.security.KeyStore.PrivateKeyEntry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,12 +76,12 @@ public class TileMap implements Renderable{
 		
 		bindAttribute();
 		
-		//for(int level=0; level<levels.size(); level++){
-			bindTexture(0);
-			bindUniform(0);
-			bindLevelSSBO(0);
-			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, tileIndex.length, GL11.GL_UNSIGNED_INT, 0, (int) (levels.get(0).getDimension().x*levels.get(0).getDimension().y)*4);
-		//}
+		for(int level=0; level<levels.size(); level++){
+			bindTexture(level);
+			bindUniform(level);
+			bindLevelSSBO(level);
+			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, tileIndex.length, GL11.GL_UNSIGNED_INT, 0, (int) (levels.get(level).getDimension().x*levels.get(level).getDimension().y)*4);
+		}
 		unbindAttribute();
 		
 		shader.stop();
@@ -117,8 +116,8 @@ public class TileMap implements Renderable{
 	private void bindUniform(int level){
 		//System.out.println("columns: " + levels.get(level).getActiveTileset().getNumberOfColumns());
 		//System.out.println("rows: " + levels.get(level).getActiveTileset().getNumberOfRows());
-		shader.loadTilesetNumberOfColumns(17);
-		shader.loadTilesetNumberOfRows(17);
+		shader.loadTilesetNumberOfColumns(levels.get(level).getActiveTileset().getNumberOfColumns());
+		shader.loadTilesetNumberOfRows(levels.get(level).getActiveTileset().getNumberOfRows());
 	}
 	
 	/**

@@ -19,6 +19,7 @@ void main(){
  	gl_Position = projection*vec4(vertexPosition.x + tilePosition.x, vertexPosition.y + tilePosition.y, vertexPosition.z, 1.0);
     
     int textureIndex = textureIdSSBO[gl_InstanceID];
+
     if(textureIndex != 0){
     	float column  	 = mod(textureIndex-1, tilesetNumberOfColumns);
     	float row     	 = floor((textureIndex-1) / tilesetNumberOfRows);
