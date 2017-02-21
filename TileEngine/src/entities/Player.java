@@ -18,6 +18,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import input.Input;
 import renderEngine.Renderable;
 import shaders.PlayerShader;
 import test.Error;
@@ -41,11 +43,15 @@ public class Player implements Renderable{
 
 	private int VAO, VBO, EBO;
 	private Matrix4f modelMatrix = new Matrix4f();
-	private Vector3f position = new Vector3f(0, 0, 0);
+	private Vector3f position;
 	private float rotationAngle = 0;
 	private Vector3f rotationAxis = new Vector3f(0, 0, 1);
 	private Vector3f scale = new Vector3f(1f, 1f, 1);
 
+	private long lastFrame = 0;
+	private boolean moving = false;
+	private float velocity = 100; //in pixel per second
+	
 	private List<Tileset> tilesets = new ArrayList<Tileset>();
 	
 	private PlayerShader shader;
@@ -67,7 +73,23 @@ public class Player implements Renderable{
 		bindBuffer();
 	}
 	
-	public void update(){
+	/**
+	 * Update player's properties like position, etc...
+	 * @param deltaT the time elapsed since last frame
+	 */
+	public void update(long deltaT){
+		float deltaS = (float) deltaT/1000;
+		float displacement = deltaS*velocity;
+		System.out.println("deltaS: " + deltaS + ", DeltaT: " + deltaT + ", Displacement: " + displacement);
+		
+		if(Input.keyState[Input.W] == true)
+			increasePosition(new Vector3f(0, -displacement, 0));
+		if(Input.keyState[Input.S] == true)
+			increasePosition(new Vector3f(0, displacement, 0));		
+		if(Input.keyState[Input.A] == true)
+			increasePosition(new Vector3f(-displacement, 0, 0));		
+		if(Input.keyState[Input.D] == true)
+			increasePosition(new Vector3f(displacement, 0, 0));
 		
 	}
 	
@@ -212,6 +234,16 @@ public class Player implements Renderable{
 		this.position.x = position.x;
 		this.position.y = position.y;
 		this.position.z = position.z;
+	}
+	
+	/**
+	 * Increase the player's position of delta
+	 * @param delta the amount of movement
+	 */
+	public void increasePosition(Vector3f delta){
+		position.translate(delta.x, delta.y, delta.z);
+		modelMatrix.translate(delta);
+		//System.out.println("Player position: " + position.x + ", " + position.y + ", " + position.z);
 	}
 
 	/**
