@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Object name="player">
+	<Tileset name="player_normal" definitionPath="res/tilesets/player_normal_def.xml"
+		imagePath="res/tilesets/player_normal_img.png"></Tileset>
+
+	<Animation id="0" name="walk_right" length="2">
+		<Frame id="0" subTextureId="2" />
+		<Frame id="1" subTextureId="3" />
+	</Animation>
+	<Animation id="1" name="walk_left" length="2">
+		<Frame id="0" subTextureId="6" />
+		<Frame id="1" subTextureId="5" />
+	</Animation>
+</Object>

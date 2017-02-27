@@ -8,7 +8,7 @@ layout (std430, binding=3) buffer textureIdVector{
 };
    
 out vec2 texCoordinate; 
-out int draw;
+flat out int draw;
 
 uniform mat4 view;
 uniform mat4 projection;

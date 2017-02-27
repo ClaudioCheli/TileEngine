@@ -1,6 +1,5 @@
 package main;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class Main {
 		TileMap tileMap = new TileMap("res/entities/tileMap.xml", shader);
 		
 		PlayerShader playerShader = new PlayerShader();
-		Player player = new Player("res/entities/Player.xml", playerShader);
+		Player player = new Player("res/entities/knight.xml", playerShader);
 		
 		
 		List<Renderable> renderables = new ArrayList<Renderable>();
@@ -39,7 +38,7 @@ public class Main {
 			DisplayManager.clear();
 			
 			Input.checkInput();
-			player.update(Timer.getDelta());
+			player.update(Timer.getDelta(), Timer.getTime());
 			
 			renderer.render(renderables);
 			

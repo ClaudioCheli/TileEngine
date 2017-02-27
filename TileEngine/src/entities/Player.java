@@ -17,8 +17,11 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import animation.Animation;
 import input.Input;
 import renderEngine.Renderable;
 import shaders.PlayerShader;
@@ -31,8 +34,8 @@ public class Player implements Renderable{
 	private static final float playerVertex[] = {
 			// Positions		 // Texture
 			64.0f,   0.0f, 0.0f, 1.0f, 0.0f, // Top Right
-			64.0f, 128.0f, 0.0f, 1.0f, 1.0f, // Bottom Right
-			 0.0f, 128.0f, 0.0f, 0.0f, 1.0f, // Bottom Left
+			64.0f, 64.0f, 0.0f, 1.0f, 1.0f, // Bottom Right
+			 0.0f, 64.0f, 0.0f, 0.0f, 1.0f, // Bottom Left
 			 0.0f,   0.0f, 0.0f, 0.0f, 0.0f  // Top Left
 	};
 
@@ -52,6 +55,12 @@ public class Player implements Renderable{
 	private boolean moving = false;
 	private float velocity = 100; //in pixel per second
 	
+	private Animation walkUp;
+	private Animation walkDown;
+	private Animation walkLeft;
+	private Animation walkRight;
+	private Animation currentAnimation;
+	private List<Animation> animations = new ArrayList<Animation>();
 	private List<Tileset> tilesets = new ArrayList<Tileset>();
 	
 	private PlayerShader shader;
@@ -77,19 +86,23 @@ public class Player implements Renderable{
 	 * Update player's properties like position, etc...
 	 * @param deltaT the time elapsed since last frame
 	 */
-	public void update(long deltaT){
+	public void update(long deltaT, long time){
 		float deltaS = (float) deltaT/1000;
 		float displacement = deltaS*velocity;
 		System.out.println("deltaS: " + deltaS + ", DeltaT: " + deltaT + ", Displacement: " + displacement);
 		
-		if(Input.keyState[Input.W] == true)
+		if(Input.keyState[Input.W] == true){
 			increasePosition(new Vector3f(0, -displacement, 0));
-		if(Input.keyState[Input.S] == true)
+		}
+		if(Input.keyState[Input.S] == true){
 			increasePosition(new Vector3f(0, displacement, 0));		
-		if(Input.keyState[Input.A] == true)
+		}
+		if(Input.keyState[Input.A] == true){
 			increasePosition(new Vector3f(-displacement, 0, 0));		
-		if(Input.keyState[Input.D] == true)
+		}
+		if(Input.keyState[Input.D] == true){
 			increasePosition(new Vector3f(displacement, 0, 0));
+		}
 		
 	}
 	
@@ -139,7 +152,7 @@ public class Player implements Renderable{
 		shader.loadModelMatrix(modelMatrix);
 		shader.loadTilesetNumberOfColumns(tilesets.get(0).getNumberOfColumns());
 		shader.loadTilesetNumberOfRows(tilesets.get(0).getNumberOfRows());
-		shader.loadTextureIndex(3);
+		shader.loadTextureIndex(currentAnimation.getCurrentID());
 		
 		Error.exitOnGLError("Error: bindUniform");
 	}
@@ -196,30 +209,68 @@ public class Player implements Renderable{
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document document = builder.parse(new File(playerDefinitionPath));
 		
+		loadTileset(document.getElementsByTagName("tileset"));
+		
+		loadAnimation(document.getElementsByTagName("animation"));
+	}
+	
+	private void loadTileset(NodeList tilesetElements){
 		String tilesetDefinitionPath = null;
 		String tilesetImagePath = null;
-
-		Node root = document.getFirstChild();
-		if( root.hasChildNodes() ){
-			Node tileset = root.getFirstChild();
-			while(tileset != null){
-				if(tileset.hasAttributes()){
-					for(int i=0; i<tileset.getAttributes().getLength(); i++){
-						Node attribute = tileset.getAttributes().item(i);
-						switch (attribute.getNodeName()) {
-						case "definitionPath":
-							tilesetDefinitionPath = attribute.getTextContent();
-							break;
-						case "imagePath":
-							tilesetImagePath = attribute.getTextContent();
-							break;
-						}
-					}
-					if(tilesetDefinitionPath != null && tilesetImagePath != null)
-						tilesets.add(new Tileset(tilesetDefinitionPath, tilesetImagePath));
+		
+		for(int i=0; i<tilesetElements.getLength(); i++){
+			for(int j=0; j<tilesetElements.item(i).getAttributes().getLength(); j++){
+				Node attribute = tilesetElements.item(i).getAttributes().item(j);
+				switch (attribute.getNodeName()) {
+				case "definitionPath":
+					tilesetDefinitionPath = attribute.getTextContent();
+					break;
+				case "imagePath":
+					tilesetImagePath = attribute.getTextContent();
+					break;
 				}
-				tileset = tileset.getNextSibling();
 			}
+			if(tilesetDefinitionPath != null && tilesetImagePath != null)
+				tilesets.add(new Tileset(tilesetDefinitionPath, tilesetImagePath));
+		}
+	}
+	
+	private void loadAnimation(NodeList animationElements){
+		String name = "";
+		int length = 0;
+		for(int i=0; i<animationElements.getLength(); i++){
+			NamedNodeMap animationAttributes = animationElements.item(i).getAttributes();
+			for(int j=0; j<animationAttributes.getLength(); j++){
+				Node attribute = animationAttributes.item(j);
+				switch (attribute.getNodeName()) {
+				case "name":
+					name = attribute.getTextContent();
+					break;
+				case "length":
+					length = Integer.parseInt(attribute.getTextContent());
+					break;
+				}
+			}
+			switch (name) {
+			case "walk_up":
+				System.out.println("Animation name:" + name + ", length: " + length);
+				NodeList frames = animationElements.item(i).getChildNodes();
+				for(int p=0; p<frames.getLength(); p++){
+					System.out.println("Name: " + frames.item(p).getNodeType() + frames.item(p).getNodeName());
+				}
+				walkUp = new Animation(name, length, animationElements.item(i).getChildNodes());
+				break;
+			case "walk_down":
+				walkDown = new Animation(name, length, animationElements.item(i).getChildNodes());
+				break;
+			case "walk_left":
+				walkLeft = new Animation(name, length, animationElements.item(i).getChildNodes());
+				break;
+			case "walk_right":
+				walkRight = new Animation(name, length, animationElements.item(i).getChildNodes());
+				break;
+			}
+			currentAnimation = walkDown;
 		}
 	}
 	

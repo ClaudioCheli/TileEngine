@@ -62,14 +62,14 @@ public class Tileset {
 			rows = textureHeight/tileHeight;
 		}
 		
-		System.out.println("Tileset name: " + tilesetName);
+		/*System.out.println("Tileset name: " + tilesetName);
 		System.out.println("Player texture width: " + textureWidth);
 		System.out.println("Player texture height: " + textureHeight);
 		System.out.println("Player texture tilesNumber: " + tilesNumber);
 		System.out.println("Player texture tilesWidth: " + tileWidth);
 		System.out.println("Player texture tilesHeight: " + tileHeight);
 		System.out.println("Player texture columns: " + columns);
-		System.out.println("Player texture rows: " + rows);
+		System.out.println("Player texture rows: " + rows);*/
 	}
 	
 	public int getNumberOfRows(){return rows;}
