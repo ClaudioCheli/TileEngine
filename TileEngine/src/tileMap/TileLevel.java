@@ -24,7 +24,7 @@ public class TileLevel {
 		this.levelDimension = new Vector2f(levelDimension.x, levelDimension.y);
 		this.tileDimension = new Vector2f(tileDimension.x, tileDimension.y);
 		calculateTilePositions();
-		printInfo();
+		//printInfo();
 	}
 	
 	public Vector2f getDimension(){return new Vector2f(levelDimension.x, levelDimension.y);}

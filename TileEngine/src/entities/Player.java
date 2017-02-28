@@ -5,6 +5,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,8 +30,9 @@ import shaders.PlayerShader;
 import test.Error;
 import tileMap.Tileset;
 import toolBox.Buffer;
+import toolBox.Timer;
 
-public class Player implements Renderable{
+public class Player implements Renderable, Observer{
 	
 	private static final float playerVertex[] = {
 			// Positions		 // Texture
@@ -54,6 +57,7 @@ public class Player implements Renderable{
 	private long lastFrame = 0;
 	private boolean moving = false;
 	private float velocity = 100; //in pixel per second
+	private Vector3f direction = new Vector3f();
 	
 	private Animation walkUp;
 	private Animation walkDown;
@@ -63,6 +67,8 @@ public class Player implements Renderable{
 	private List<Animation> animations = new ArrayList<Animation>();
 	private List<Tileset> tilesets = new ArrayList<Tileset>();
 	
+	private Input input;
+	
 	private PlayerShader shader;
 	
 	/**
@@ -70,8 +76,9 @@ public class Player implements Renderable{
 	 * @param playerDefinitionPath The path of definition file
 	 * @param shader The player shader
 	 */
-	public Player(String playerDefinitionPath, PlayerShader shader) {
+	public Player(String playerDefinitionPath, PlayerShader shader, Input input) {
 		this.shader = shader;
+		this.input = input;
 		position = new Vector3f(0, 0, 0);
 		try {
 			findResource(playerDefinitionPath);
@@ -86,24 +93,14 @@ public class Player implements Renderable{
 	 * Update player's properties like position, etc...
 	 * @param deltaT the time elapsed since last frame
 	 */
-	public void update(long deltaT, long time){
+	public void updatePosition(long deltaT, long time){
 		float deltaS = (float) deltaT/1000;
 		float displacement = deltaS*velocity;
-		System.out.println("deltaS: " + deltaS + ", DeltaT: " + deltaT + ", Displacement: " + displacement);
+		//System.out.println("deltaS: " + deltaS + ", DeltaT: " + deltaT + ", Displacement: " + displacement);
 		
-		if(Input.keyState[Input.W] == true){
-			increasePosition(new Vector3f(0, -displacement, 0));
-		}
-		if(Input.keyState[Input.S] == true){
-			increasePosition(new Vector3f(0, displacement, 0));		
-		}
-		if(Input.keyState[Input.A] == true){
-			increasePosition(new Vector3f(-displacement, 0, 0));		
-		}
-		if(Input.keyState[Input.D] == true){
-			increasePosition(new Vector3f(displacement, 0, 0));
-		}
-		
+		Vector3f delta = new Vector3f(direction.x*displacement, direction.y*displacement, direction.z*displacement);
+		increasePosition(delta);	
+		currentAnimation.update(Timer.getTime());
 	}
 	
 	/**
@@ -253,11 +250,6 @@ public class Player implements Renderable{
 			}
 			switch (name) {
 			case "walk_up":
-				System.out.println("Animation name:" + name + ", length: " + length);
-				NodeList frames = animationElements.item(i).getChildNodes();
-				for(int p=0; p<frames.getLength(); p++){
-					System.out.println("Name: " + frames.item(p).getNodeType() + frames.item(p).getNodeName());
-				}
 				walkUp = new Animation(name, length, animationElements.item(i).getChildNodes());
 				break;
 			case "walk_down":
@@ -270,8 +262,9 @@ public class Player implements Renderable{
 				walkRight = new Animation(name, length, animationElements.item(i).getChildNodes());
 				break;
 			}
-			currentAnimation = walkDown;
+			
 		}
+		currentAnimation = walkDown;
 	}
 	
 	private void createModelMatrix(){
@@ -306,6 +299,41 @@ public class Player implements Renderable{
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
+	}
+
+	@Override
+	public void update(Observable inputObs, Object arg1) {
+		if(inputObs == input){
+			currentAnimation.stop();
+			if(input.getKeyState(Input.W) == true){
+				direction.y = -1;
+				currentAnimation = walkUp;
+			}else{
+				direction.y = 0;
+			}
+			
+			if(input.getKeyState(Input.S) == true){
+				currentAnimation = walkDown;
+				direction.y = 1;	
+			}else{
+				direction.y = 0;
+			}
+			
+			if(input.getKeyState(Input.A) == true){
+				currentAnimation = walkLeft;
+				direction.x = -1;
+			}else{
+				direction.x = 0;
+			}
+			
+			if(input.getKeyState(Input.D) == true){
+				currentAnimation = walkRight;
+				direction.x = 1;
+			}else{
+				direction.x = 0;
+			}
+			currentAnimation.start(Timer.getTime());
+		}
 	}
 
 }

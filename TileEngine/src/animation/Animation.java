@@ -4,13 +4,13 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Animation {
+public class Animation{
 
 	private int ids[];
 	private int currentID;
 	private int length;
 	private long startingTime;
-	private int frameTime = 10;
+	private int frameTime = 15;
 	private String name; 
 	
 	public Animation(String name, int length, NodeList frames){
@@ -40,19 +40,19 @@ public class Animation {
 		}
 	}
 	
-	public void start(long time){
+	public synchronized void start(long time){
 		startingTime = time;
 		currentID = ids[0];
 	}
 	
-	public void update(long time){
+	public synchronized void update(long time){
 		if(time - startingTime > frameTime){
-			currentID = (currentID+1)%length;
+			currentID = (currentID+1)%(length-1);
 		    startingTime += frameTime;
 		}
 	}
 	
-	public void stop(){
+	public synchronized void stop(){
 		startingTime = 0;
 		currentID = ids[0];
 	}
@@ -60,5 +60,6 @@ public class Animation {
 	public int getCurrentID(){return ids[currentID];}
 	
 	public String getName(){return name;}
+
 	
 }

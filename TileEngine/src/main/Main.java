@@ -20,12 +20,16 @@ public class Main {
 	public static void main(String[] args) {
 		DisplayManager.createDisplay();
 		
+		Input input = Input.getInput();
+		Thread inputThread = new Thread(input);
+		
 		TileMapShader shader = new TileMapShader();
 		TileMap tileMap = new TileMap("res/entities/tileMap.xml", shader);
 		
 		PlayerShader playerShader = new PlayerShader();
-		Player player = new Player("res/entities/knight.xml", playerShader);
+		Player player = new Player("res/entities/knight.xml", playerShader, input);
 		
+		input.addObserver(player);
 		
 		List<Renderable> renderables = new ArrayList<Renderable>();
 		renderables.add(tileMap);
@@ -34,11 +38,12 @@ public class Main {
 		Renderer renderer = new Renderer();
 		
 		Timer.startFPS();
+		inputThread.start();
 		while(!Display.isCloseRequested()){
 			DisplayManager.clear();
 			
-			Input.checkInput();
-			player.update(Timer.getDelta(), Timer.getTime());
+			//input.checkInput();
+			player.updatePosition(Timer.getDelta(), Timer.getTime());
 			
 			renderer.render(renderables);
 			
@@ -46,6 +51,7 @@ public class Main {
 			Timer.updateFPS();
 		}
 		
+		inputThread.interrupt();
 		DisplayManager.closeDisplay();
 	}
 	

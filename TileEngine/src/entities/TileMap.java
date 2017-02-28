@@ -256,8 +256,8 @@ public class TileMap implements Renderable{
 				tileLevelName = layerAttributes.getNamedItem("name").getTextContent();
 				tileLevelDimension.x = Integer.parseInt(layerAttributes.getNamedItem("width").getTextContent());
 				tileLevelDimension.y = Integer.parseInt(layerAttributes.getNamedItem("height").getTextContent());
-				System.out.println("TileLevel name: " + tileLevelName);
-				System.out.println("TileLevel dimension: " + tileLevelDimension.x + " " + tileLevelDimension.y);
+				//System.out.println("TileLevel name: " + tileLevelName);
+				//System.out.println("TileLevel dimension: " + tileLevelDimension.x + " " + tileLevelDimension.y);
 			}
 
 			NodeList layerChild = layer.getChildNodes();
@@ -270,7 +270,7 @@ public class TileMap implements Renderable{
 							NamedNodeMap propertyAttributes = properties.item(propertiesNumber).getAttributes();
 							if(propertyAttributes.getNamedItem("name").getTextContent().equalsIgnoreCase("tileset"))
 								activeTileset = propertyAttributes.getNamedItem("value").getTextContent();
-							System.out.println("active tileSet: " + activeTileset);
+							//System.out.println("active tileSet: " + activeTileset);
 						}
 					}	
 					break;

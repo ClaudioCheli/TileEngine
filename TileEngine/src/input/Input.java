@@ -1,11 +1,12 @@
 package input;
 
-import org.lwjgl.Sys;
+import java.util.Observable;
+
 import org.lwjgl.input.Keyboard;
 
-import entities.Player;
-
-public class Input {
+public class Input extends Observable implements Runnable{
+	
+	private static Input instance = null;
 	
 	public static final int W = 0;
 	public static final int A = 1;
@@ -14,15 +15,30 @@ public class Input {
 	
 	public static final int MAX_KEYS = 4;
 	
-	public static boolean keyState[] = new boolean[MAX_KEYS];
-	static{
+	public boolean keyState[] = new boolean[MAX_KEYS];
+	
+	private Input(){
 		for(int i=0; i<MAX_KEYS; i++)
 			keyState[i] = false;
 	}
 	
-	private static boolean pressed = false;
+	public static Input getInput(){
+		if(instance == null)
+			instance = new Input();
+		return instance;
+	}
 	
-	public static void checkInput(){
+	private boolean pressed = false;
+	
+	public synchronized boolean getKeyState(int key){
+		return keyState[key];
+	}
+	
+	public synchronized void setKeyState(int key, boolean state){
+		keyState[key] = state;
+	}
+	
+	private synchronized void checkInput(){
 		while (Keyboard.next()) {
 			if(Keyboard.getEventKeyState()){
 				pressed = true;
@@ -31,25 +47,44 @@ public class Input {
 			}
 			switch (Keyboard.getEventKey()) {
 			case Keyboard.KEY_W:
-				keyState[W] = pressed; 
+				setKeyState(W, pressed);
+				setChanged();
 				//System.out.print("Pressed: " + keyState[W] + ", Key: W");
 				break;
 			case Keyboard.KEY_A:
-				keyState[A] = pressed; 
+				setKeyState(A, pressed);
+				setChanged();
 				//System.out.print("Pressed: " + keyState[A] + ", Key: A");
 				break;
 			case Keyboard.KEY_S:
-				keyState[S] = pressed;
+				setKeyState(S, pressed);
+				setChanged();
 				//System.out.print("Pressed: " + keyState[S] + ", Key: S");
 				break;
 			case Keyboard.KEY_D:
-				keyState[D] = pressed; 
+				setKeyState(D, pressed);
+				setChanged();
 				//System.out.print("Pressed: " + keyState[D] + ", Key: D");
 				break;
 			}
 			//System.out.print("Key W: " + keyState[W] + ", " + " Key S: " + keyState[S] + ", " + "Key A: " + keyState[A] + ", " + " Key D: " + keyState[D]);
 			//System.out.println("");
 		}
+		notifyObservers();
 	}
 
+	@Override
+	public void run() {
+		while(true){
+			checkInput();
+			try {
+				Thread.sleep(15);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	
+	
 }
