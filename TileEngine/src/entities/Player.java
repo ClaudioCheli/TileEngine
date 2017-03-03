@@ -63,8 +63,8 @@ public class Player implements Renderable, Observer{
 	private Animation walkDown;
 	private Animation walkLeft;
 	private Animation walkRight;
+	private Animation idleDown;
 	private Animation currentAnimation;
-	private List<Animation> animations = new ArrayList<Animation>();
 	private List<Tileset> tilesets = new ArrayList<Tileset>();
 	
 	private Input input;
@@ -261,10 +261,12 @@ public class Player implements Renderable, Observer{
 			case "walk_right":
 				walkRight = new Animation(name, length, animationElements.item(i).getChildNodes());
 				break;
+			case "idle_down":
+				idleDown = new Animation(name, length, animationElements.item(i).getChildNodes());
 			}
 			
 		}
-		currentAnimation = walkDown;
+		currentAnimation = idleDown;
 	}
 	
 	private void createModelMatrix(){
@@ -304,34 +306,64 @@ public class Player implements Renderable, Observer{
 	@Override
 	public void update(Observable inputObs, Object arg1) {
 		if(inputObs == input){
-			currentAnimation.stop();
-			if(input.getKeyState(Input.W) == true){
-				direction.y = -1;
-				currentAnimation = walkUp;
-			}else{
-				direction.y = 0;
+			currentAnimation.stop();		
+			List<Integer> keyEvents = (List<Integer>) arg1;
+			boolean bW = false;
+			boolean bA = false;
+			boolean bS = false;
+			boolean bD = false;
+			for(int i=0; i<keyEvents.size(); i++){
+				switch (keyEvents.get(i)) {
+				case Input.W:
+					bW = true;
+					break;
+				case Input.A:
+					bA = true;
+					break;
+				case Input.S:
+					bS = true;
+					break;
+				case Input.D:
+					bD = true;
+					break;
+				}
 			}
 			
-			if(input.getKeyState(Input.S) == true){
-				currentAnimation = walkDown;
-				direction.y = 1;	
-			}else{
-				direction.y = 0;
+			if(bW || bS){
+				int w = input.getKeyState(Input.W) ? 1 : 0;
+				int s = input.getKeyState(Input.S) ? 1 : 0;
+				direction.y = -w + s;
+				if(direction.y == 1)
+					currentAnimation = walkDown;
+				if(direction.y == -1)
+					currentAnimation = walkUp;
+				if(direction.y == 0 && direction.x == 1)
+					currentAnimation = walkRight;
+				if(direction.y == 0 && direction.x == -1)
+					currentAnimation = walkLeft;
 			}
 			
-			if(input.getKeyState(Input.A) == true){
-				currentAnimation = walkLeft;
-				direction.x = -1;
-			}else{
-				direction.x = 0;
+			if(bA || bD){
+				int a = input.getKeyState(Input.A) ? 1 : 0;
+				int d = input.getKeyState(Input.D) ? 1 : 0;
+				direction.x = -a + d;
+				if(direction.x == 1)
+					currentAnimation = walkRight;
+				if(direction.x == -1)
+					currentAnimation = walkLeft;
+				if(direction.x == 0 && direction.y == 1)
+					currentAnimation = walkDown;
+				if(direction.x == 0 && direction.y == -1)
+					currentAnimation = walkUp;
+			}
+
+			if(!input.getKeyState(Input.W) 
+					&& !input.getKeyState(Input.A)
+					&& !input.getKeyState(Input.S)
+					&& !input.getKeyState(Input.D)){
+				currentAnimation = idleDown;
 			}
 			
-			if(input.getKeyState(Input.D) == true){
-				currentAnimation = walkRight;
-				direction.x = 1;
-			}else{
-				direction.x = 0;
-			}
 			currentAnimation.start(Timer.getTime());
 		}
 	}

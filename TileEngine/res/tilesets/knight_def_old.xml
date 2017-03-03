@@ -8,6 +8,4 @@
 	<SubTexture id="5" name="knight_walk_left_2.png" x="64" y="64" width="64" height="64"/>
 	<SubTexture id="6" name="player_walk_right_1.png" x="128" y="64" width="64" height="64"/>
 	<SubTexture id="7" name="player_walk_right_2.png" x="192" y="64" width="64" height="64"/>
-	<SubTexture id="10" name="player_idle_down_1.png" x="128" y="128" width="64" height="64"/>
-	<SubTexture id="11" name="player_idle_down_2.png" x="192" y="128" width="64" height="64"/>
 </tileset>

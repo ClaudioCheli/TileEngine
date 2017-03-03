@@ -7,10 +7,11 @@ import org.w3c.dom.NodeList;
 public class Animation{
 
 	private int ids[];
+	private int index;
 	private int currentID;
 	private int length;
 	private long startingTime;
-	private int frameTime = 15;
+	private int frameTime = 200;
 	private String name; 
 	
 	public Animation(String name, int length, NodeList frames){
@@ -40,24 +41,27 @@ public class Animation{
 		}
 	}
 	
-	public synchronized void start(long time){
+	public void start(long time){
 		startingTime = time;
 		currentID = ids[0];
+		index = 0;
 	}
 	
-	public synchronized void update(long time){
+	public void update(long time){
 		if(time - startingTime > frameTime){
-			currentID = (currentID+1)%(length-1);
+			index = (index+1)%length;
+			currentID = ids[index];
 		    startingTime += frameTime;
 		}
 	}
 	
-	public synchronized void stop(){
+	public void stop(){
 		startingTime = 0;
 		currentID = ids[0];
+		index = 0;
 	}
 	
-	public int getCurrentID(){return ids[currentID];}
+	public int getCurrentID(){return ids[index];}
 	
 	public String getName(){return name;}
 

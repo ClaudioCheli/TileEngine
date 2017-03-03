@@ -18,8 +18,4 @@
 		<frame id="0" subTextureId="6"/>
 		<frame id="1" subTextureId="7"/>
 	</animation>
-	<animation id="4" name="idle_down" length="2">
-		<frame id="0" subTextureId="10"/>
-		<frame id="1" subTextureId="11"/>
-	</animation>
 </object>
