@@ -6,81 +6,63 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 
 public class TileLevel {
-	
-	private String name;
-	private List<Tileset> tilesets;
-	private String activeTileset;
-	private List<Integer> tilesID;
-	private Vector2f levelDimension;
-	private Vector2f tileDimension;
-	private float tilesPositions[];
 
-	public TileLevel(String name, List<Tileset> tilesets, String activeTileset, List<Integer> tilesID,
-			Vector2f levelDimension, Vector2f tileDimension){
+	private String name;
+	private Vector2f tileDimension = new Vector2f();
+	private Vector2f levelDimension = new Vector2f();
+	private List<Integer> levelData = new ArrayList<>();
+	private int tilesNumber;
+	private float[] positions;
+
+	public TileLevel(){}
+
+	public void calculatePositions(){
+		positions = new float[(int) (levelDimension.x*levelDimension.y*3)];
+		int k=0;
+		for(int i=0; i<levelDimension.y; i++){
+			for(int j=0; j<levelDimension.x; j++){
+				positions[k] = j*tileDimension.x;  k++;
+				positions[k] = i*tileDimension.y; k++;
+				positions[k] = -10; k++;
+			}
+		}
+	}
+
+	public void setData(String data){
+		data = data.replaceAll("\\s+", "");
+		String[] tilesBuffer = data.split(",");
+		for(String str : tilesBuffer){
+			levelData.add(Integer.parseInt(str));
+		}
+	}
+
+	public void setName(String name){
 		this.name = name;
-		this.tilesets = new ArrayList<>(tilesets);
-		this.activeTileset = activeTileset;
-		this.tilesID = new ArrayList<>(tilesID);
-		this.levelDimension = new Vector2f(levelDimension.x, levelDimension.y);
-		this.tileDimension = new Vector2f(tileDimension.x, tileDimension.y);
-		calculateTilePositions();
-		//printInfo();
 	}
-	
-	public Vector2f getDimension(){return new Vector2f(levelDimension.x, levelDimension.y);}
-	
-	public float[] getTilePositions(){return tilesPositions;}
-	
 	public String getName(){return name;}
-	
-	public Tileset getActiveTileset(){return findTileset(activeTileset);}
-	
-	public int[] getTilesID(){
-		int data[] = new int[tilesID.size()];
-		for(int i=0; i<tilesID.size(); i++)
-			data[i] = tilesID.get(i);
-		return data;
-	}
-	
-	private void calculateTilePositions(){
-		tilesPositions = new float[(int) (levelDimension.x*levelDimension.y)*3];
-		int k=0;
-		for(int i=0; i<levelDimension.x; i++){
-			for(int j=0; j<levelDimension.y; j++){
-				tilesPositions[k++] = j*tileDimension.x;
-				tilesPositions[k++] = i*tileDimension.y;
-				tilesPositions[k++] = 50;
-			}
+
+	public void setLevelDimension(Vector2f dimension){this.levelDimension = dimension;}
+
+	public void setTileDimension(Vector2f dimension){this.tileDimension = dimension;}
+
+	public int getTilesNumber(){return positions.length/3;}
+
+	public int getTileId(int tile){
+		try {
+			return levelData.get(tile).intValue();
+		}catch (IndexOutOfBoundsException e){
+			return 0;
 		}
 	}
-	
-	private Tileset findTileset(String name){
-		int i = 0;
-		while(i<tilesets.size()){
-			if(tilesets.get(i).getName().matches(name))
-				return tilesets.get(i);
-			i++;
-		}
-		return null;
+
+	public Vector2f getDimension(){return new Vector2f(levelDimension);}
+
+	public Vector2f getTilePositions(int tile){
+		return new Vector2f(positions[tile*3], positions[tile*3+1]);
 	}
-	
-	private void printInfo(){
-		System.out.println("TileLevel: " + name);
-		System.out.println("Active tileset: " + activeTileset);
-		System.out.println("tileLevel dimension: " + levelDimension.x + ", " + levelDimension.y );
-		for(int i=0; i<levelDimension.x; i++){
-			for(int j=0; j<levelDimension.y; j++){
-				System.out.print(tilesID.get((int)(j+(levelDimension.x*i))) + ", ");
-			}
-			System.out.println("");
-		}
-		int k=0;
-		for(int i=0; i<levelDimension.x; i++){
-			for(int j=0; j<levelDimension.y; j++){
-				System.out.print(tilesPositions[k++] + ", " + tilesPositions[k++] + ", " + tilesPositions[k++] + " | ");
-			}
-			System.out.println("");
-		}
-	}
+
+	public float[] getPositions(){return positions;}
+
+	public List<Integer> getTextureIndex(){return levelData;}
 
 }

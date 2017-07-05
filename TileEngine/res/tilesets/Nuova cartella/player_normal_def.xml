@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tileset name="player_normal" width="512" height="512" tilesNumber="8" tileWidth="128" tileHeight="256">
+	<SubTexture id="0" name="player_jump_left.png" x="0" y="0" width="128" height="256"/>
+	<SubTexture id="1" name="player_stand_right.png" x="128" y="0" width="128" height="256"/>
+	<SubTexture id="2" name="player_walk_right_1.png" x="256" y="0" width="128" height="256"/>
+	<SubTexture id="3" name="player_walk_right_2.png" x="384" y="0" width="128" height="256"/>
+	<SubTexture id="4" name="player_jump_right.png" x="0" y="256" width="128" height="256"/>
+	<SubTexture id="5" name="player_walk_left_2.png" x="128" y="256" width="128" height="256"/>
+	<SubTexture id="6" name="player_walk_left_1.png" x="256" y="256" width="128" height="256"/>
+	<SubTexture id="7" name="player_stand_left.png" x="348" y="256" width="128" height="256"/>
+</Tileset>

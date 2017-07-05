@@ -44,6 +44,10 @@ public class Input extends Observable implements Runnable{
 		keyState[key] = state;
 	}
 	
+	public synchronized boolean[] getKeyStates(){
+		return keyState;
+	}
+	
 	public void terminate(){
 		running = false;
 	}
@@ -60,25 +64,25 @@ public class Input extends Observable implements Runnable{
 				setKeyState(W, pressed);
 				keyEvents.add(W);
 				setChanged();
-				//System.out.print("Pressed: " + keyState[W] + ", Key: W");
+				//System.out.println("Pressed: " + keyState[W] + ", Key: W");
 				break;
 			case Keyboard.KEY_A:
 				setKeyState(A, pressed);
 				keyEvents.add(A);
 				setChanged();
-				//System.out.print("Pressed: " + keyState[A] + ", Key: A");
+				//System.out.println("Pressed: " + keyState[A] + ", Key: A");
 				break;
 			case Keyboard.KEY_S:
 				setKeyState(S, pressed);
 				keyEvents.add(S);
 				setChanged();
-				//System.out.print("Pressed: " + keyState[S] + ", Key: S");
+				//System.out.println("Pressed: " + keyState[S] + ", Key: S");
 				break;
 			case Keyboard.KEY_D:
 				setKeyState(D, pressed);
 				keyEvents.add(D);
 				setChanged();
-				//System.out.print("Pressed: " + keyState[D] + ", Key: D");
+				//System.out.println("Pressed: " + keyState[D] + ", Key: D");
 				break;
 			case Keyboard.KEY_ESCAPE:
 				setKeyState(ESC, pressed);
@@ -101,7 +105,6 @@ public class Input extends Observable implements Runnable{
 			e1.printStackTrace();
 		}
 		while(running){
-			System.out.println("Input: checkInput()");
 			checkInput();
 			try {
 				Thread.sleep(30);

@@ -13,7 +13,7 @@ uniform int tilesetNumberOfColumns;
 
 void main(){	
 
-    gl_Position   = projection * model * vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1.0);
+    gl_Position   = projection * view * model * vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z-10, 1.0);
     float column  = mod(textureIndex, tilesetNumberOfColumns);
     float row     = (textureIndex) / max(tilesetNumberOfRows,tilesetNumberOfColumns);
     vec2 offset   = vec2(column/tilesetNumberOfColumns, row/tilesetNumberOfRows);  

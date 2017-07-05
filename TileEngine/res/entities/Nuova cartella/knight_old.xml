@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="knight">
+	<tileset name="knight" definitionPath="res/tilesets/knight_def.xml" 
+		imagePath="res/tilesets/knight_img.png"></tileset>
+	<animation id="0" name="walk_up" length="2">
+		<frame id="0" subTextureId="0"/>
+		<frame id="1" subTextureId="1"/>
+	</animation>
+	<animation id="1" name="walk_down" length="2">
+		<frame id="0" subTextureId="2"/>
+		<frame id="1" subTextureId="3"/>
+	</animation>
+	<animation id="2" name="walk_left" length="2">
+		<frame id="0" subTextureId="4"/>
+		<frame id="1" subTextureId="5"/>
+	</animation>
+	<animation id="3" name="walk_right" length="2">
+		<frame id="0" subTextureId="6"/>
+		<frame id="1" subTextureId="7"/>
+	</animation>
+</object>

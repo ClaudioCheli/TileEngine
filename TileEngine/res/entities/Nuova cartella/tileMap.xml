@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="tileMap">
+	<tileset name="tileMap_baseMap" definitionPath="res/tilesets/tileMap_baseMap_def.xml"
+		imagePath="res/tilesets/tileMap_baseMap_img.png"></tileset>
+
+	<layer name="sea" width="10" height="10">
+		<properties>
+			<property name="tileset" value="tileMap_baseMap" />
+		</properties>
+		<data encoding="csv">
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192,
+			192,192,192,192,192,192,192,192,192,192
+		</data>
+	</layer>
+	<layer name="terrain" width="10" height="10">
+		<properties>
+			<property name="tileset" value="tileMap_baseMap" />
+		</properties>
+		<data encoding="csv">
+			0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,1,2,3,0,0,0,
+			0,0,0,0,17,18,19,0,0,0,
+			0,0,0,1,21,18,19,0,0,0,
+			0,0,0,17,18,4,51,0,0,0,
+			0,0,0,17,18,20,2,3,0,0,
+			0,1,2,21,18,18,18,19,0,0,
+			0,49,50,5,18,18,18,20,3,0,
+			0,0,0,49,50,50,50,50,51,0,
+			0,0,0,0,0,0,0,0,0,0
+		</data>
+	</layer>
+	<layer name="object" width="10" height="10">
+		<properties>
+			<property name="tileset" value="tileMap_baseMap" />
+		</properties>
+		<data encoding="csv">
+			0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,37,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,36,0,0,0,0,
+			0,0,0,0,37,0,0,0,0,0,
+			0,0,36,0,0,0,37,0,0,0,
+			0,0,0,0,37,0,0,36,0,0,
+			0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0
+		</data>
+	</layer>
+
+</object>

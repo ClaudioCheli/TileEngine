@@ -17,7 +17,7 @@ public class Timer {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 	
-	public static int getDelta(){
+	public static int getFrameTime(){
 		long time = getTime();
 		int delta = (int)(time - lastFrame);
 		lastFrame = time;

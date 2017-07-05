@@ -6,22 +6,31 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.lwjgl.opengl.Display;
-
+import org.lwjgl.util.vector.Vector2f;
+import builder.EntityCreationDirector;
+import builder.PlayerBuilder;
+import builder.TileMapBuilder;
+import camera.Camera;
 import display.DisplayManager;
 import entities.Player;
 import entities.TileMap;
 import input.Input;
+import renderEngine.Entity;
 import renderEngine.Renderable;
 import renderEngine.Renderer;
-import shaders.PlayerShader;
-import shaders.TileMapShader;
 import toolBox.Timer;
 
 public class Game implements Observer{
 
 	private Renderer renderer;
+	
+	private List<Renderable> renderables	= new ArrayList<>();
+	private List<Entity> physical 			= new ArrayList<>();
+	private TileMap tileMap;
 	private Player player;
-	private List<Renderable> renderables;
+	private Camera camera;
+	private Vector2f playerPosition = new Vector2f();
+	
 	private Thread inputThread;
 
 	private Input input;
@@ -33,20 +42,32 @@ public class Game implements Observer{
 
 		input = Input.getInput();
 		inputThread = new Thread(input);
-
-		TileMapShader shader = new TileMapShader();
-		TileMap tileMap = new TileMap("res/entities/tileMap.xml", shader);
-
-		PlayerShader playerShader = new PlayerShader();
-		player = new Player("res/entities/knight.xml", playerShader, input);
-
+	
+		TileMapBuilder tileMapBuilder = new TileMapBuilder();
+		try {
+			tileMapBuilder.createEntity();
+			tileMapBuilder.createTileset();
+			tileMapBuilder.createTileLevels();
+			tileMapBuilder.createShader();
+			tileMapBuilder.bindBuffers();
+			renderables.add(tileMapBuilder.getEntity());
+			tileMap = (TileMap) tileMapBuilder.getEntity();
+		} catch (Exception e) {e.printStackTrace();}
+		
+		EntityCreationDirector director = new EntityCreationDirector();
+		director.setEntityBuilder(new PlayerBuilder());
+		try {
+			director.createEntity();
+			renderables.add(director.getEntity());
+			physical.add(director.getEntity());
+			player = (Player) director.getEntity();
+		} catch (Exception e) {e.printStackTrace();}
+		
 		input.addObserver(player);
 		input.addObserver(this);
-
-		renderables = new ArrayList<Renderable>();
-		renderables.add(tileMap);
-		renderables.add(player);
-
+		
+		camera = new Camera();
+		
 		renderer = new Renderer();
 
 		Timer.startFPS();
@@ -57,11 +78,15 @@ public class Game implements Observer{
 		while(running){
 			DisplayManager.clear();
 			
-			//input.checkInput();
-			System.out.println("New frame");
-			player.updatePosition(Timer.getDelta(), Timer.getTime());
+			playerPosition = player.getPosition();
+
+			camera.move(new Vector2f(playerPosition.x-DisplayManager.WIDTH/2,
+					playerPosition.y-DisplayManager.HEIGHT/2));
 			
-			renderer.render(renderables);
+			for(Renderable renderable : renderables)
+				renderable.handleInput();
+			
+			renderer.render(renderables, camera);
 			
 			DisplayManager.updateDisplay();
 			Timer.updateFPS();

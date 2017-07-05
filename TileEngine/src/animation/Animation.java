@@ -4,17 +4,28 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Animation{
+public abstract class Animation{
 
-	private int ids[];
-	private int index;
-	private int currentID;
-	private int length;
-	private long startingTime;
-	private int frameTime = 200;
-	private String name; 
+	public static final int ANIMATION_IDLE_LEFT = 1;
+	public static final int ANIMATION_IDLE_RIGHT = 2;
+	public static final int ANIMATION_IDLE_DOWN = 3;
+	public static final int ANIMATION_IDLE_UP = 4;
+	public static final int ANIMATION_RUN_LEFT = 5;
+	public static final int ANIMATION_RUN_RIGHT = 6;
+	public static final int ANIMATION_RUN_DOWN = 7;
+	public static final int ANIMATION_RUN_UP = 8;
 	
-	public Animation(String name, int length, NodeList frames){
+	protected int type;
+	
+	protected int ids[];
+	protected int index;
+	protected int currentID;
+	protected int length;
+	protected long startTime;
+	protected int frameTime = 200;
+	protected String name; 
+	
+	/*public Animation(String name, int length, NodeList frames){
 		this.name = name;
 		this.length = length;
 		ids = new int[length];
@@ -39,9 +50,25 @@ public class Animation{
 				ids[id] = subTextureId;
 			}
 		}
+	}*/
+	
+	public Animation(int type, String animationName, int animationLength, int frames[]){
+		this.type   = type;
+        this.name   = animationName;
+        this.length = animationLength;
+        this.ids    = frames;
 	}
 	
-	public void start(long time){
+	public abstract void update(long time);
+	public abstract void start(long time);
+	public abstract void stop();
+
+	public int getType(){return type;}
+	
+	public abstract int getCurrentID();
+	protected abstract void setCurrentID(int id);
+	
+	/*public void start(long time){
 		startingTime = time;
 		currentID = ids[0];
 		index = 0;
@@ -64,6 +91,6 @@ public class Animation{
 	public int getCurrentID(){return ids[index];}
 	
 	public String getName(){return name;}
-
+*/
 	
 }

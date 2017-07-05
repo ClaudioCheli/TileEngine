@@ -4,8 +4,10 @@ import org.lwjgl.util.vector.Matrix4f;
 
 public interface Renderable {
 	
-	public void render();
-	
-	public void bindProjectionMatrix(Matrix4f projectionMatrix);
+	void render();
+	void handleInput();
+	void update();
+	void bindProjectionMatrix(Matrix4f projectionMatrix);
+	void bindViewMatrix(Matrix4f viewMatrix);
 
 }

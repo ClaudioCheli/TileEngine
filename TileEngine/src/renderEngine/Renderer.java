@@ -1,9 +1,14 @@
 package renderEngine;
 
+import java.util.Calendar;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
+import camera.Camera;
 import display.DisplayManager;
 
 public class Renderer {
@@ -25,11 +30,27 @@ public class Renderer {
 	 * Render a list of <code>Renderable</code> object
 	 * @param renderables The list of object to be rendered, in <code>List&#60Renderable&#62</code>
 	 */
-	public void render(List<Renderable> renderables){
-		for (Renderable renderable : renderables) {
+	public void render(List<Entity> renderables){
+		for (Entity renderable : renderables) {
+			renderable.update();
 			renderable.bindProjectionMatrix(projectionMatrix);
 			renderable.render();
 		}
+	}
+	
+	public void render(List<Renderable> renderables, Camera camera){
+		clear();
+		for(Renderable renderable : renderables){
+			renderable.update();
+			renderable.bindProjectionMatrix(projectionMatrix);
+			renderable.bindViewMatrix(camera.getViewMatrix());
+			renderable.render();
+		}
+	}
+	
+	public void clear(){
+		GL11.glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
 	/**
@@ -48,6 +69,8 @@ public class Renderer {
 		projectionMatrix.m32 = -(FPlusN)/(FMinN);
 		projectionMatrix.m33 = 1;
 	}
+	
+	
 
 
 }
