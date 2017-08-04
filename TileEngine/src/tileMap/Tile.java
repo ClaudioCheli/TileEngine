@@ -77,13 +77,13 @@ public class Tile {
 	public Matrix4f getModelMatrix() {return modelMatrix;}	
 	
 	public void setPosition(Vector3f position) {
-		this.position.x = position.x; this.position.y = position.y; this.position.z = position.z;
+		this.position.x += position.x; this.position.y += position.y; this.position.z += position.z;
 		modelMatrix.translate(position);
 	}
 	
 	public void increasePosition(Vector3f delta){
 		Vector3f.add(position, delta, position);
-		modelMatrix.translate(position);
+		modelMatrix.translate(delta);
 	}
 
 	public void setRotation(Vector3f rotationAxis, float rotationAngle){

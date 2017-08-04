@@ -4,7 +4,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 import entities.Player;
 import finiteStateMachines.PlayerState;
-import input.Input;
 import toolBox.Timer;
 
 public class RunningRightState extends PlayerState {
@@ -35,7 +34,7 @@ public class RunningRightState extends PlayerState {
 	@Override
 	public void update(Player player) {
 		float displacement = Player.SPEED * Timer.getFrameTime();
-		player.setPosition(new Vector2f(direction.x*displacement, direction.y*displacement));
+		player.updatePosition(new Vector2f(direction.x*displacement, direction.y*displacement));
 		runningRightAnimation.update(Timer.getTime());
 	}
 

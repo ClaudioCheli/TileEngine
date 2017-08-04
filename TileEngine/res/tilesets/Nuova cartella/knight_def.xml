@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset name="knight" src="res/tilesets/knight_img.png" width="512" height="512" tilesNumber="16" tileWidth="128" tileHeight="128">
+	<SubTexture id="0" name="knight_walk_up_1.png" x="0" y="0" width="128" height="128"/>
+	<SubTexture id="1" name="knight_walk_up_2.png" x="128" y="0" width="128" height="128"/>
+	<SubTexture id="2" name="knight_walk_down_1.png" x="256" y="0" width="128" height="128"/>
+	<SubTexture id="3" name="knight_walk_down_2.png" x="384" y="0" width="128" height="128"/>
+	<SubTexture id="4" name="knight_walk_left_1.png" x="0" y="128" width="128" height="128"/>
+	<SubTexture id="5" name="knight_walk_left_2.png" x="128" y="128" width="128" height="128"/>
+	<SubTexture id="6" name="player_walk_right_1.png" x="256" y="128" width="128" height="128"/>
+	<SubTexture id="7" name="player_walk_right_2.png" x="384" y="128" width="128" height="128"/>
+	<SubTexture id="10" name="player_idle_down_1.png" x="256" y="384" width="128" height="128"/>
+	<SubTexture id="11" name="player_idle_down_2.png" x="384" y="384" width="128" height="128"/>
+</tileset>

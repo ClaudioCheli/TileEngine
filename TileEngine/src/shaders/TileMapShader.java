@@ -3,21 +3,19 @@ package shaders;
 import org.lwjgl.util.vector.Matrix4f;
 
 public class TileMapShader extends Shader{
-	
-	private static final String VERTEX_SHADER_PATH = "res/shaders/tileMapVertexShader.vs";
-	private static final String FRAGMENT_SHADER_PATH = "res/shaders/tileMapFragmentShader.fs";
-	
+
 	private int location_viewMatrix;
 	private int location_projectionMatrix;
 	private int location_tilesetNumberOfRows;
 	private int location_tilesetNumberOfColumns;
+	private int location_samplerArray;
 
 	/**
 	 * Call the Shader constructor whit parameters 
 	 * VERTEX_SHADER_PATH and FRAGMENT_SHADER_PATH
 	 */
-	public TileMapShader() {
-		super(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+	public TileMapShader(String vertexShaderFile, String fragmentShaderFile) {
+		super(vertexShaderFile, fragmentShaderFile);
 	}
 
 	/**
@@ -30,6 +28,7 @@ public class TileMapShader extends Shader{
 		location_projectionMatrix 		= super.getUniformLocation("projection");
 		location_tilesetNumberOfRows	= super.getUniformLocation("tilesetNumberOfRows");
 		location_tilesetNumberOfColumns = super.getUniformLocation("tilesetNumberOfColumns");
+		location_samplerArray			= super.getUniformLocation("myTextures");
 	}
 
 	/**
@@ -73,6 +72,10 @@ public class TileMapShader extends Shader{
 	 */
 	public void loadViewMatrix(Matrix4f matrix){
 		super.loadMatrix(location_viewMatrix, matrix);
+	}
+	
+	public void connectTextureUnits(int[] units){
+		super.loadIntArray(location_samplerArray, units);
 	}
 	
 }

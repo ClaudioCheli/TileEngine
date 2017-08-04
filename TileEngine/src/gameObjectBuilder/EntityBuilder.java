@@ -1,4 +1,4 @@
-package builder;
+package gameObjectBuilder;
 
 import renderEngine.Entity;
 

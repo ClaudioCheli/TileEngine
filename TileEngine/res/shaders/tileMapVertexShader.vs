@@ -10,6 +10,7 @@ layout (std430, binding=3) buffer textureIdVector{
 
 out vec2 texCoordinate;
 flat out int draw;
+flat out int textureUnit;
 
 uniform mat4 view;
 uniform mat4 projection;
@@ -25,6 +26,9 @@ void main(){
 	int textureId = textureIdSSBO[gl_InstanceID];
 	
 	if(textureId != 0){
+		textureUnit = int(floor( textureId / (tilesetNumberOfRows*tilesetNumberOfColumns) ));
+		textureId = textureId - (textureUnit * tilesetNumberOfRows*tilesetNumberOfColumns);
+
     	float column  	 = mod(textureId-1, tilesetNumberOfColumns);
     	float row     	 = floor((textureId-1) / tilesetNumberOfRows);
     	vec2 offset 	 = vec2(column/tilesetNumberOfColumns, row/tilesetNumberOfRows);  

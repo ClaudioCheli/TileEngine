@@ -10,5 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libraries/slick-util.jar" sourcepath="libraries/slick-util-src.zip"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

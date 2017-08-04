@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tilesets>
+	<tileset name="terrain" src="terrain_img.png" width="1024"
+		height="1024" tilewidth="64" tileheight="64">
+
+	</tileset>
+	<tileset name="objects" src="objects_img.png" width="1024"
+		height="1024" tilewidth="64" tileheight="64">
+
+	</tileset>
+</tilesets>

@@ -5,15 +5,18 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
-import builder.EntityCreationDirector;
-import builder.PlayerBuilder;
-import builder.TileMapBuilder;
+
 import camera.Camera;
 import display.DisplayManager;
 import entities.Player;
 import entities.TileMap;
+import gameObjectBuilder.EntityCreationDirector;
+import gameObjectBuilder.PlayerBuilder;
+import gameObjectBuilder.TileMapBuilder;
 import input.Input;
 import renderEngine.Entity;
 import renderEngine.Renderable;
@@ -39,14 +42,17 @@ public class Game implements Observer{
 	
 	public Game(){
 		DisplayManager.createDisplay();
-
+		try {
+			Keyboard.create();
+		} catch (LWJGLException e) {e.printStackTrace();}
 		input = Input.getInput();
 		inputThread = new Thread(input);
 	
-		TileMapBuilder tileMapBuilder = new TileMapBuilder();
 		try {
+			TileMapBuilder tileMapBuilder = new TileMapBuilder("island.xml", "terrain_def.xml", 
+												"tileMapVertexShader.vs", "tileMapFragmentShader.fs");
 			tileMapBuilder.createEntity();
-			tileMapBuilder.createTileset();
+			//tileMapBuilder.createTileset();
 			tileMapBuilder.createTileLevels();
 			tileMapBuilder.createShader();
 			tileMapBuilder.bindBuffers();
@@ -54,9 +60,10 @@ public class Game implements Observer{
 			tileMap = (TileMap) tileMapBuilder.getEntity();
 		} catch (Exception e) {e.printStackTrace();}
 		
-		EntityCreationDirector director = new EntityCreationDirector();
-		director.setEntityBuilder(new PlayerBuilder());
+		EntityCreationDirector director = new EntityCreationDirector();	
 		try {
+			director.setEntityBuilder(new PlayerBuilder("knight.xml", "knight_def.xml",
+											"playerVertexShader.vs", "playerFragmentShader.fs"));
 			director.createEntity();
 			renderables.add(director.getEntity());
 			physical.add(director.getEntity());

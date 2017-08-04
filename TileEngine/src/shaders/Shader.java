@@ -8,9 +8,15 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL33;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+
+import toolBox.Buffer;
+import toolBox.Util;
 
 /**
  * Shader's base class
@@ -30,12 +36,12 @@ public abstract class Shader {
 	 * Create the program
 	 * Bind the shader's attributes 
 	 * Get all the uniform's location
-	 * @param vertexShaderPath The vertex shader path
-	 * @param fragmentShaderPath The fragment shader path
+	 * @param vertexShaderFile The vertex shader path
+	 * @param fragmentShaderFile The fragment shader path
 	 */
-	public Shader(String vertexShaderPath, String fragmentShaderPath){
-		vertexShaderID   = loadShader(vertexShaderPath, GL20.GL_VERTEX_SHADER);
-		fragmentShaderID = loadShader(fragmentShaderPath, GL20.GL_FRAGMENT_SHADER);
+	public Shader(String vertexShaderFile, String fragmentShaderFile){
+		vertexShaderID   = loadShader(Util.SHADERS_PATH + vertexShaderFile, GL20.GL_VERTEX_SHADER);
+		fragmentShaderID = loadShader(Util.SHADERS_PATH + fragmentShaderFile, GL20.GL_FRAGMENT_SHADER);
 		programID		 = GL20.glCreateProgram();
 		GL20.glAttachShader(programID, vertexShaderID);
 		GL20.glAttachShader(programID, fragmentShaderID);
@@ -138,6 +144,10 @@ public abstract class Shader {
 		matrix.store(matrixBuffer);
 		matrixBuffer.flip();
 		GL20.glUniformMatrix4(location, false, matrixBuffer);
+	}
+	
+	protected void loadIntArray(int location, int[] array) {
+		GL20.glUniform1(location, Buffer.storeDataInIntBuffer(array));
 	}
 	
 	/**

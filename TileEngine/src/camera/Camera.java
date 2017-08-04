@@ -1,6 +1,5 @@
 package camera;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -19,24 +18,8 @@ public class Camera {
 	}
 	
 	public void move(Vector2f position){
-		/*if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-			position.y += 20f;
-			delta.y += 20f;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-			position.x += 20f;
-			delta.x += 20f;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_S)){
-			position.y -= 20f;
-			delta.y -= 20f;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-			position.x -= 20f;
-			delta.x -= 20f;
-		}*/
 		Vector3f delta = new Vector3f(this.position.x - position.x, this.position.y - position.y, 0);
-		//Matrix4f.translate(delta, view, view);
+		view.translate(delta);
 		this.position.x = position.x;
 		this.position.y = position.y;
 	}

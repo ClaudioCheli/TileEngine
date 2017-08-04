@@ -4,9 +4,6 @@ import org.lwjgl.util.vector.Matrix4f;
 
 public class PlayerShader extends Shader{
 	
-	private static final String VERTEX_SHADER_PATH = "res/shaders/playerVertexShader.vs";
-	private static final String FRAGMENT_SHADER_PATH = "res/shaders/playerFragmentShader.fs";
-	
 	private int location_modelMatrix;
 	private int location_viewMatrix;
 	private int location_projectionMatrix;
@@ -18,8 +15,8 @@ public class PlayerShader extends Shader{
 	 * Call the Shader constructor whit parameters 
 	 * VERTEX_SHADER_PATH and FRAGMENT_SHADER_PATH
 	 */
-	public PlayerShader() {
-		super(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+	public PlayerShader(String vertexShaderFile, String fragmentShaderFile) {
+		super(vertexShaderFile, fragmentShaderFile);
 	}
 
 	/**

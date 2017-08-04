@@ -1,7 +1,5 @@
 package finiteStateMachines.playerStates;
 
-import org.lwjgl.util.vector.Vector2f;
-
 import entities.Player;
 import finiteStateMachines.PlayerState;
 import toolBox.Timer;

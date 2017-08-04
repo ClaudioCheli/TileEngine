@@ -50,53 +50,7 @@ public abstract class PlayerState {
 	public abstract void update(Player player);
 	public abstract void exit();
 	public abstract int getAnimationID();
-	
-	/*protected void checkKeyEvents(Player player){
-		boolean keyState[] = player.getKeyStates();
-		List<Integer> keyEvents = player.getKeyEvents();
-		boolean bW = false;
-		boolean bA = false;
-		boolean bS = false;
-		boolean bD = false;
-		for(int i=0; i<keyEvents.size(); i++){
-			System.out.println(keyEvents.get(i));
-			switch (keyEvents.get(i)) {
-			case Input.W:
-				bW = true;
-				break;
-			case Input.A:
-				bA = true;
-				break;
-			case Input.S:
-				bS = true;
-				break;
-			case Input.D:
-				bD = true;
-				break;
-			}
-		}
-		
-		if(bW || bS){
-			int w = keyState[Input.W] ? 1 : 0;
-			int s = keyState[Input.S] ? 1 : 0;
-			direction.y = -w + s;
-		}
-		if(bA || bD){
-			int a = keyState[Input.A] ? 1 : 0;
-			int d = keyState[Input.D] ? 1 : 0;
-			direction.x = -a + d;
-		}
-		if(bW)
-			System.out.print("W ");
-		if(bA)
-			System.out.print("A ");
-		if(bD)
-			System.out.print("D ");
-		if(bS)
-			System.out.print("S ");
-		//System.out.println("direction: " + direction.x + ", " + direction.y);
-	}*/
-	
+
 	public static void setAnimations(List<Animation> animations){
 		for(Animation animation : animations){
 			switch (animation.getType()) {

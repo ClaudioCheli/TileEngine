@@ -1,16 +1,9 @@
 package tileMap;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.lwjgl.util.vector.Vector2f;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import texture.TilesetTexture;
 import toolBox.BoundingBox;
 
@@ -25,6 +18,7 @@ public class Tileset {
 	public Tileset(){}
 
 	public Vector2f getTileDimension(){return new Vector2f(tileWidth, tileHeight);}
+	public void setTileDimension(Vector2f dimension) { tileWidth = (int) dimension.x; tileHeight = (int) dimension.y; }
 	public String getName(){return tilesetName;}
 	public void setName(String name){this.tilesetName = name;}
 	public int getNumberOfRows(){return rows;}

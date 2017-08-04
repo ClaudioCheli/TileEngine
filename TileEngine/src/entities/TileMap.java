@@ -18,17 +18,24 @@ import org.lwjgl.util.vector.Vector2f;
 import renderEngine.Renderable;
 import shaders.TileMapShader;
 import test.Error;
+import texture.TilesetTexture;
 import tileMap.TileLevel;
-import tileMap.Tileset;
 import toolBox.Buffer;
 
 public class TileMap implements Renderable{
 	
     private int VAO, VBO, EBO, positionVBO, textureIndexVBO, ssbo;
+    
+    private int texturesNumber;
 
-    private List<Tileset> tilesets = new ArrayList<>();
+    //private List<Tileset> tilesets = new ArrayList<>();
+    private List<TilesetTexture> textures = new ArrayList<>();
     private List<TileLevel> tileLevels = new ArrayList<>();
     private int tileCount = 0;
+    
+    // Equals in every tilesets
+    private int tilesetsRow;
+    private int tilesetsColumn;
 
     public static Vector2f dimension;
 
@@ -49,6 +56,7 @@ public class TileMap implements Renderable{
 
 	
     public TileMap(){
+
     }
 
 	
@@ -58,7 +66,6 @@ public class TileMap implements Renderable{
     @Override
     public void render() {
         shader.start();
-
         bindAttribute();
         bindTexture();
         bindUniform();
@@ -75,8 +82,8 @@ public class TileMap implements Renderable{
     }
 
     private void bindUniform() {
-        shader.loadTilesetNumberOfRows(tilesets.get(0).getNumberOfRows());
-        shader.loadTilesetNumberOfColumns(tilesets.get(0).getNumberOfColumns());
+        shader.loadTilesetNumberOfRows(tilesetsRow);
+        shader.loadTilesetNumberOfColumns(tilesetsColumn);
     }
 
 	/**
@@ -84,9 +91,12 @@ public class TileMap implements Renderable{
 	 * @param level The level's id, in ints
 	 */
 	public void bindTexture() {
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tilesets.get(0).getTextureID());
-		Error.exitOnGLError("Error: tileMap bindTexture");
+		for(int i=0; i<texturesNumber; i++){
+			GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.get(i).getTextureID());
+			//System.out.println("texture " + textures.get(i).getTextureID() + " connected to unit " + (GL13.GL_TEXTURE0 + i));
+			Error.exitOnGLError("Error: tileMap glTexSubImage3D " + i);
+		}
 	}
 	
 	private void bindSSBO(){
@@ -170,6 +180,7 @@ public class TileMap implements Renderable{
 				positionsList.add(levelPos[i]);
 			}
 		}
+		
 		FloatBuffer positionBuffer = Buffer.storeDataInFloatBuffer(positionsList.toArray(new Float[positionsList.size()]));
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 3*Float.BYTES, 0);
@@ -186,7 +197,7 @@ public class TileMap implements Renderable{
 		for(int i=0; i<textureIndexList.size(); i++){
 			indexAr[i] = textureIndexList.get(i).intValue();
 		}
-		IntBuffer textureIndexBuffer = Buffer.storeDataInIntBuffer(indexAr);//Buffer.storeDataInIntBuffer(textureIndexList.toArray(new Integer[textureIndexList.size()]));
+		IntBuffer textureIndexBuffer = Buffer.storeDataInIntBuffer(indexAr);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureIndexBuffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(3, 1, GL11.GL_UNSIGNED_INT, false, 1*4, 0);
 		GL33.glVertexAttribDivisor(3, 1);
@@ -206,14 +217,41 @@ public class TileMap implements Renderable{
 		GL30.glBindVertexArray(0);
 	}
 	
-	public void setTileset(List<Tileset> tilesets){this.tilesets = tilesets;}
+	//public void setTileset(List<Tileset> tilesets){this.tilesets = tilesets;}
 	public void setTileLevels(List<TileLevel> tileLevels){
+		tilesetsRow	 	= tileLevels.get(0).getTileset().getNumberOfRows();
+		tilesetsColumn 	= tileLevels.get(0).getTileset().getNumberOfColumns();
+		
+		List<String> tilesetNames = new ArrayList<>();
+		for(TileLevel level : tileLevels){
+			if(!isInList(tilesetNames, level.getTileset().getName())){
+				tilesetNames.add(level.getTileset().getName());
+				textures.add(level.getTileset().getTexture());
+			}
+		}
+		texturesNumber = tilesetNames.size();
+		
 		for(TileLevel level : tileLevels)
 			tileCount += level.getTilesNumber();
 		this.tileLevels = tileLevels;
 	}
+	
+	private boolean isInList(List<String> tilesetNames, String name){
+		for(String str : tilesetNames){
+			if(str.equalsIgnoreCase(name))
+				return true;
+		}
+		return false;
+	}
+	
     public TileLevel getTileLevel(int level){return tileLevels.get(level);}
-    public Tileset getTileset(int set){return tilesets.get(set);}
-	public void setShader(TileMapShader shader){this.shader = shader;}
+    //public Tileset getTileset(int set){return tilesets.get(set);}
+	public void setShader(TileMapShader shader){
+		this.shader = shader;
+		int[] units = {GL13.GL_TEXTURE0,GL13.GL_TEXTURE0+1};
+		shader.connectTextureUnits(units);
+    	//for(int i=0; i<32; i++)
+    	//	shader.loadTexture(i);
+	}
 
 }

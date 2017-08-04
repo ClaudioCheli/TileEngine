@@ -1,4 +1,4 @@
-package builder;
+package gameObjectBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import org.lwjgl.util.vector.Vector2f;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import entities.TileMap;
 import renderEngine.Renderable;
 import shaders.TileMapShader;
@@ -23,37 +22,48 @@ import tileMap.Tileset;
 import toolBox.BoundingBox;
 import toolBox.LineBoundingBox;
 import toolBox.SquareBoundingBox;
+import toolBox.Util;
 import xmlParser.XMLDocumentParser;
 
 public class TileMapBuilder{
 	
 	private TileMap tileMap;
-
-	private static final String TILEMAP_FILE = "res/entities/level1_test.xml";
-	private static final String TILEMAP_DEF	= "res/tilesets/terrain_tileset_test.xml";
 	
 	private DocumentBuilderFactory factory;
 	private DocumentBuilder builder;
 	
 	private XMLDocumentParser tileMapParser;
-	private XMLDocumentParser tileMapDefParser;
+	private XMLDocumentParser tilesetsParser;
 	
-	public void createEntity() throws Exception{
-		tileMap = new TileMap();
+	private String vertexShaderFile;
+	private String fragmentShaderFile;
+	
+	private List<Tileset> tilesets;
+	
+	int tileWidth 	= 0;
+	int tileHeight 	= 0;
+	
+	public TileMapBuilder(String mapFile, String mapTilesetDefinition,
+			String vertexShaderFile, String fragmentShaderFile) throws Exception{
+		this.vertexShaderFile 	= vertexShaderFile;
+		this.fragmentShaderFile = fragmentShaderFile;
 		factory = DocumentBuilderFactory.newInstance();
 		builder = factory.newDocumentBuilder();
-		tileMapParser 		= new XMLDocumentParser(builder.parse(new File(TILEMAP_FILE)));
-		tileMapDefParser	= new XMLDocumentParser(builder.parse(new File(TILEMAP_DEF)));
+		tileMapParser 		= new XMLDocumentParser(builder.parse(new File(Util.ENTITIES_PATH + mapFile)));
+		tilesetsParser	= new XMLDocumentParser(builder.parse(new File(Util.TILESETS_PATH + mapTilesetDefinition)));
+	}
+	
+	public void createEntity(){
+		tileMap = new TileMap();
 	}
 
 	public void createTileset() {
-		
-		NodeList tilesetsNode = tileMapDefParser.getElementsByTagName("tileset");
+		/*NodeList tilesetsNode = tilesetsParser.getElementsByTagName("tileset");
 		Tileset tileset = null;
-		List<Tileset> tilesets = new ArrayList<>();
+		tilesets = new ArrayList<>();
 		Map<Integer, BoundingBox> boundingBoxes = new HashMap<>();
-		int textureWidth=1, textureHeight=1, tileWidth=1, tileHeight=1, tileID=0;
-		String boxType = "", texturePath="";
+		int textureWidth=1, textureHeight=1, tileID=0;
+		String boxType = "", textureName="";
 		Vector2f boundingBoxPosition	= new Vector2f();
 		Vector2f boundingBoxDimension	= new Vector2f();
 		Vector2f boundingBoxEndpoints[]	= new Vector2f[2];
@@ -61,24 +71,22 @@ public class TileMapBuilder{
 		for(int i=0; i<tilesetsNode.getLength(); i++){
 			tileset = new Tileset();
 			
-			NamedNodeMap attributeMap = tilesetsNode.item(i).getAttributes();
-			textureWidth	= Integer.parseInt(attributeMap.getNamedItem("width").getTextContent());
-			textureHeight	= Integer.parseInt(attributeMap.getNamedItem("height").getTextContent());
-			tileWidth		= Integer.parseInt(attributeMap.getNamedItem("tilewidth").getTextContent());
-			tileHeight		= Integer.parseInt(attributeMap.getNamedItem("tileheight").getTextContent());
-			tileset.setName(attributeMap.getNamedItem("name").getTextContent());
+			NamedNodeMap tilesetAttributes = tilesetsNode.item(i).getAttributes();
+			textureWidth	= Integer.parseInt(tilesetAttributes.getNamedItem("width").getTextContent());
+			textureHeight	= Integer.parseInt(tilesetAttributes.getNamedItem("height").getTextContent());
+			tileWidth		= Integer.parseInt(tilesetAttributes.getNamedItem("tilewidth").getTextContent());
+			tileHeight		= Integer.parseInt(tilesetAttributes.getNamedItem("tileheight").getTextContent());
+			textureName 	= tilesetAttributes.getNamedItem("src").getTextContent();
+			tileset.setName(tilesetAttributes.getNamedItem("name").getTextContent());
 			tileset.setNumberOfRows(textureHeight/tileHeight);
 			tileset.setNumberOfColumns(textureWidth/tileWidth);
+			tileset.setTexture(new TilesetTexture(Util.TILESETS_PATH + textureName, new Vector2f(textureWidth, textureHeight)));
 			tilesets.add(tileset);
 			
-			Node image 	= tileMapDefParser.getNamedChild("image", tilesetsNode.item(i));
-			texturePath = image.getAttributes().getNamedItem("source").getTextContent();
-			tileset.setTexture(new TilesetTexture(texturePath, new Vector2f(textureWidth, textureHeight)));
-
-			NodeList tiles = tileMapDefParser.getNamedChilds("tile", tilesetsNode.item(i));
+			NodeList tiles = tilesetsParser.getNamedChilds("tile", tilesetsNode.item(i));
 			for(int j=0; j<tiles.getLength(); j++){
 				tileID = Integer.parseInt(tiles.item(j).getAttributes().getNamedItem("id").getTextContent());
-				Node object = tileMapDefParser.getNamedChild("object", tileMapDefParser.getNamedChild("objectgroup", tiles.item(j)));
+				Node object = tilesetsParser.getNamedChild("object", tilesetsParser.getNamedChild("objectgroup", tiles.item(j)));
 				NamedNodeMap objectAttributes = object.getAttributes();
 				boxType = objectAttributes.getNamedItem("type").getTextContent();
 				boundingBoxPosition.x 	= Integer.parseInt(objectAttributes.getNamedItem("x").getTextContent());
@@ -88,7 +96,7 @@ public class TileMapBuilder{
 				if(boxType.equalsIgnoreCase("square")){
 					boundingBoxes.put(tileID, new SquareBoundingBox(new Vector2f(boundingBoxPosition), new Vector2f(boundingBoxDimension)) );
 				} else if(boxType.equalsIgnoreCase("line")) {
-					Node polygon = tileMapDefParser.getNamedChild("polygon", object);
+					Node polygon = tilesetsParser.getNamedChild("polygon", object);
 					String allPoints = polygon.getAttributes().getNamedItem("points").getTextContent();
 					String point[] = allPoints.split(" ");
 					String coordinate[];
@@ -106,26 +114,34 @@ public class TileMapBuilder{
 			}
 			tileset.setBoundingBoxes(boundingBoxes);
 		}
-		tileMap.setTileset(tilesets);
+		tileMap.setTileset(tilesets);*/
 	}
 
 	public void createTileLevels() {
+		TilesetFactory tilesetFactory = TilesetFactory.getInstance();
 		TileLevel level = null;
 		List<TileLevel> tileLevels = new ArrayList<>();
-		String data = "";
-		int tileWidth=0, tileHeight=0;
-		Node map = tileMapParser.getElementsByTagName("map").item(0);
-		tileWidth	= Integer.parseInt(map.getAttributes().getNamedItem("tilewidth").getTextContent());
-		tileHeight	= Integer.parseInt(map.getAttributes().getNamedItem("tileheight").getTextContent());
+		String data = "", tilesetName = "";
 		NodeList layers = tileMapParser.getElementsByTagName("layer");
 		for(int lv=0; lv<layers.getLength(); lv++){
 			level = new TileLevel();
-			level.setTileDimension(new Vector2f(tileWidth, tileHeight));
 			level.setName(layers.item(lv).getAttributes().getNamedItem("name").getTextContent());
 			level.setLevelDimension(new Vector2f(
 					Integer.parseInt(layers.item(lv).getAttributes().getNamedItem("width").getTextContent()),
 					Integer.parseInt(layers.item(lv).getAttributes().getNamedItem("height").getTextContent())));
 			
+			//-----------------------------------------------------------------------------
+			
+			Node property = tileMapParser.getNamedChild("property", 
+					tileMapParser.getNamedChild("properties", layers.item(lv)));
+			
+			tilesetName = property.getAttributes().getNamedItem("value").getTextContent();
+			level.setTileset(tilesetFactory.makeTileset(tilesetName, tilesetsParser));
+			
+			//-----------------------------------------------------------------------------
+			
+			level.setTileDimension(new Vector2f(level.getTileset().getTileDimension().x,
+					level.getTileset().getTileDimension().y));
 			Node dataNode = tileMapParser.getNamedChild("data", layers.item(lv));
 			data = dataNode.getTextContent();
 			level.setData(data);
@@ -136,7 +152,7 @@ public class TileMapBuilder{
 	}
 
 	public void createShader() {
-		TileMapShader shader = new TileMapShader();
+		TileMapShader shader = new TileMapShader(vertexShaderFile, fragmentShaderFile);
 		tileMap.setShader(shader);
 	}
 

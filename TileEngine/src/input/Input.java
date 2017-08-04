@@ -24,6 +24,7 @@ public class Input extends Observable implements Runnable{
 	public boolean keyState[] = new boolean[MAX_KEYS];
 	
 	private Input(){
+		
 		for(int i=0; i<MAX_KEYS; i++)
 			keyState[i] = false;
 	}

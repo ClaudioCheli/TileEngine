@@ -1,5 +1,6 @@
 package toolBox;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -47,6 +48,14 @@ public class Buffer {
 			dataInt[i] = data[i].intValue();
 		IntBuffer buffer = BufferUtils.createIntBuffer(dataInt.length);
 		buffer.put(dataInt);
+		buffer.flip();
+		return buffer;
+	}
+	
+	public static ByteBuffer storeDataInByteBuffer(byte[] data){
+		ByteBuffer buffer = BufferUtils.createByteBuffer(data.length*2);
+		buffer.put(data);
+		buffer.put(data);
 		buffer.flip();
 		return buffer;
 	}

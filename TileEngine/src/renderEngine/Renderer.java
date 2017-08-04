@@ -1,11 +1,8 @@
 package renderEngine;
 
-import java.util.Calendar;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import camera.Camera;
@@ -39,7 +36,7 @@ public class Renderer {
 	}
 	
 	public void render(List<Renderable> renderables, Camera camera){
-		clear();
+		DisplayManager.clear();
 		for(Renderable renderable : renderables){
 			renderable.update();
 			renderable.bindProjectionMatrix(projectionMatrix);

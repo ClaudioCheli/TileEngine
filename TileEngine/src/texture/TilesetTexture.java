@@ -10,7 +10,8 @@ import org.newdawn.slick.opengl.TextureLoader;
 public class TilesetTexture {
 	
 	private Vector2f dimension;
-	private int textureID;
+	
+	private Texture texture;
 	
 	/**
 	 * Load the texture located at <code>imagePath</code> path
@@ -18,20 +19,24 @@ public class TilesetTexture {
 	 * @param dimension The texture's dimension, in org.lwjgl.util.vector.Vector2f
 	 */
 	public TilesetTexture(String imagePath, Vector2f dimension){
-		dimension = new Vector2f(dimension.x, dimension.y);
-		
-		Texture texture = null;
+		this.dimension = new Vector2f(dimension);
+		texture = null;
 		try{
 			texture = TextureLoader.getTexture("PNG", new FileInputStream(imagePath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
 		
-		textureID = texture.getTextureID();
+		texture.getTextureID();
+		/*System.out.println(imagePath);
+		System.out.println("width: " + dimension.x);
+		System.out.println("height: " + dimension.y);*/
 	}
 	
-	public Vector2f getDimendion(){return new Vector2f(dimension.x, dimension.y);}
+	public Vector2f getDimension(){return new Vector2f(dimension);}
 	
-	public int getTextureID(){return textureID;}
+	public int getTextureID(){return texture.getTextureID();}
+	
+	public byte[] getData(){ return texture.getTextureData(); }
 
 }

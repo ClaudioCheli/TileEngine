@@ -17,7 +17,8 @@ public class Error {
 			String errorString = GLU.gluErrorString(errorValue);
 			System.err.println("ERROR - " + errorMessage + ": " + errorString);
 
-			if (Display.isCreated()) Display.destroy();
+			if (Display.isCreated()) 
+				Display.destroy();
 			System.exit(-1);
 		}
 	}

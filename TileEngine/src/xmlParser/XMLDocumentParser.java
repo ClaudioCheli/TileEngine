@@ -1,7 +1,5 @@
 package xmlParser;
 
-import java.io.FileNotFoundException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,12 +34,13 @@ public class XMLDocumentParser {
 	}
 	
 	public NodeList getNamedChilds(String name, Node node){
-		XMLNodeList tmp = new XMLNodeList();
+		XMLNodeList tmp = null;
 		NodeList childs = node.getChildNodes();
+		if(childs != null)
+			tmp = new XMLNodeList();
 		for(int i=0; i<childs.getLength(); i++){
 			if(childs.item(i).getNodeName().equalsIgnoreCase(name))
 				tmp.add(childs.item(i));
-			i++;
 		}
 		return tmp;
 	}
